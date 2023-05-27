@@ -55,7 +55,7 @@ public class ArtifactVersionsCleaner {
         try {
             Files.delete(filePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("    ERROR: couldn't delete " + filePath);
         }
     }
 
