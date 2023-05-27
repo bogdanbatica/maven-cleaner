@@ -1,0 +1,22 @@
+# copy this file to application.properties and replace the values according to your needs
+
+repository.root=~/.m2/repository
+
+# how to treat the versions that have a name ending in "SNAPSHOT"
+snapshot.clean=true
+snapshot.keep.last=true
+
+# how to treat the other versions, not ending in "SNAPSHOT", let's call them "release" versions
+release.clean=true
+release.keep.last=true
+
+
+# fill this to only process the given group(s)
+prefix.to.process=org.springframework;org.junit
+
+# fill this to ignore certain groups/artifacts from cleaning; takes precedence over prefix.to.process
+prefix.to.skip=org.springframework.spring-context;org.otherstuff
+
+# If true, only lists the files to be deleted according to the criteria above
+simulation=true
+
