@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MavenCleaner {
 
@@ -34,10 +34,14 @@ public class MavenCleaner {
      * @param currentPath current directory to process
      */
     public void trtDir(Path currentPath) throws Exception {
-        List<Path> entries = Files.list(currentPath).collect(Collectors.toList());
+        List<Path> entries = new ArrayList<>();
+        List<Path> versionDirs = new ArrayList<>();
         boolean fileFound = false, versionDirFound = false, artifactDirFound = false;
-        List<Path> versionDirs = new ArrayList<>(entries.size());
+        try (Stream<Path> pathStream = Files.list(currentPath)) {
+            pathStream.forEach(entries::add);
+        }
         for (Path dirEntry : entries) {
+            if (dirEntry.getFileName().toString().equals(".DS_Store")) continue; // ignore these annoying Mac files
             if (dirEntry.toFile().isFile()) {
                 fileFound = true;
             } else {

@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 /** Central processing class for cleaning the versions of a specific Maven artifact in the local repository */
 public class ArtifactVersionsCleaner {
@@ -42,7 +43,9 @@ public class ArtifactVersionsCleaner {
     }
 
     void removeVersionDir(Path dirPath) throws IOException {
-        Files.list(dirPath).forEach(this::removeFile);
+        try (Stream<Path> pathStream = Files.list(dirPath)) {
+            pathStream.forEach(this::removeFile);
+        }
         removeFile(dirPath);
     }
 
