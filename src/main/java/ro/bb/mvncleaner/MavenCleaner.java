@@ -20,7 +20,11 @@ public class MavenCleaner {
     }
 
     public void go() throws Exception {
-        trtDir(repoRoot);
+        for (File file : repoRoot.toFile().listFiles()) {
+            if (file.isDirectory()) { // there may also be files in the repo root`
+                trtDir(file.toPath());
+            }
+        }
     }
 
     /** processing of a directory in the local Maven repository.
