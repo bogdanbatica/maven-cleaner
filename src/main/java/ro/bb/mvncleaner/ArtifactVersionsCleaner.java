@@ -1,6 +1,5 @@
 package ro.bb.mvncleaner;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,7 +22,7 @@ public class ArtifactVersionsCleaner {
         versionPaths.forEach(p -> versions.add(new ArtifactVersion(p)));
     }
 
-    public void go() throws IOException {
+    public void go() throws Exception {
         Iterator<ArtifactVersion> iterator = versions.descendingIterator();
         boolean releaseFound = false, snapshotFound = false;
         while (iterator.hasNext()) {
@@ -42,7 +41,7 @@ public class ArtifactVersionsCleaner {
         }
     }
 
-    void removeVersionDir(Path dirPath) throws IOException {
+    void removeVersionDir(Path dirPath) throws Exception {
         try (Stream<Path> pathStream = Files.list(dirPath)) {
             pathStream.forEach(this::removeFile);
         }
@@ -57,14 +56,14 @@ public class ArtifactVersionsCleaner {
 //        System.out.println("    Deleting " + filePath);
         try {
             Files.delete(filePath);
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("    ERROR: couldn't delete " + filePath);
         }
     }
 
 
     /* test */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         Path artifactPath = Paths.get("m:\\test\\.m2\\org\\springframework\\spring-core\\");
         List<Path> versionPaths = Arrays.asList(
                 Paths.get("m:\\test\\.m2\\org\\springframework\\spring-core\\5.1.3.RELEASE"),

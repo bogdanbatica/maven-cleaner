@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class Config {
-    private static Config ourInstance = new Config();
+    private static final Config ourInstance = new Config();
 
     Properties properties = new Properties();
 
@@ -55,4 +55,29 @@ public class Config {
     }
 
 
+
+
+
+    /* test */
+    public static void main(String[] args) {
+        System.out.println("repository root = " + Config.repositoryRoot());
+        System.out.println("cleanSnapshots = " + Config.cleanSnapshots());
+        System.out.println("keepLastSnapshot = " + Config.keepLastSnapshot());
+        System.out.println("cleanReleases = " + Config.cleanReleases());
+        System.out.println("keepLastRelease = " + Config.keepLastRelease());
+
+        List<String> prefixesToProcess = Config.prefixesToProcess();
+        System.out.println("Prefixes to process:");
+        for (String p : prefixesToProcess) System.out.println("    " + p);
+
+        List<String> prefixesToSkip = Config.prefixesToSkip();
+        if (!prefixesToSkip.isEmpty()) {
+            System.out.println("Prefixes to skip:");
+            for (String p : prefixesToSkip) System.out.println("    " + p);
+        } else {
+            System.out.println("(No prefix to skip)");
+        }
+
+        if (Config.simulation()) System.out.println("Only simulate processing.");
+    }
 }

@@ -1,7 +1,6 @@
 package ro.bb.mvncleaner;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,7 +29,6 @@ public class MavenCleaner {
     /** processing of a directory in the local Maven repository.
      * If this directory contains other artifact directories, the processing delegates to them.
      * If this directory is an artifact directory, remove the obsolete directory versions
-     * TODO classifiers
      * @param currentPath current directory to process
      */
     public void trtDir(Path currentPath) throws Exception {
@@ -68,7 +66,7 @@ public class MavenCleaner {
     }
 
 
-    void cleanVersions(Path artifactPath, List<Path> versionDirs) throws IOException {
+    void cleanVersions(Path artifactPath, List<Path> versionDirs) throws Exception {
         int thisPathNameCount = artifactPath.getNameCount();
         String mvnPath = artifactPath.subpath(rootPathNameCount, thisPathNameCount)
                 .toString().replace(File.separatorChar, '.');
