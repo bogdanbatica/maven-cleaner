@@ -12,12 +12,12 @@ import java.util.stream.Stream;
 /** Central processing class for cleaning the versions of a specific Maven artifact in the local repository */
 public class ArtifactVersionsCleaner {
 
-    Path artifactPath;
+    String artifactKey;
 
     TreeSet<ArtifactVersion> versions;
 
-    public ArtifactVersionsCleaner(Path artifactPath, List<Path> versionPaths) {
-        this.artifactPath = artifactPath;
+    public ArtifactVersionsCleaner(String artifactKey, List<Path> versionPaths) {
+        this.artifactKey = artifactKey;
         versions = new TreeSet<>();
         versionPaths.forEach(p -> versions.add(new ArtifactVersion(p)));
     }
@@ -26,22 +26,28 @@ public class ArtifactVersionsCleaner {
         Iterator<ArtifactVersion> iterator = versions.descendingIterator();
         boolean releaseFound = false, snapshotFound = false;
         while (iterator.hasNext()) {
-            ArtifactVersion version = iterator.next();
-            if (version.isSnapshot()) {
+            ArtifactVersion artifactVersion = iterator.next();
+            if (artifactVersion.isSnapshot()) {
                 if (Config.cleanSnapshots() && (snapshotFound || !Config.keepLastSnapshot())) {
-                    removeVersionDir(version.versionPath);
+                    removeVersionDir(artifactVersion);
                 }
                 snapshotFound = true;
             } else {
                 if (Config.cleanReleases() && (releaseFound || !Config.keepLastRelease())) {
-                    removeVersionDir(version.versionPath);
+                    removeVersionDir(artifactVersion);
                 }
                 releaseFound = true;
             }
         }
     }
 
-    void removeVersionDir(Path dirPath) throws Exception {
+    void removeVersionDir(ArtifactVersion artifactVersion) throws Exception {
+        Path dirPath = artifactVersion.versionPath;
+        String version = artifactVersion.comparableVersion.toString();
+        if (PomHolder.artifactVersionToKeep(artifactKey, version)) {
+            System.out.println("    Skipping version " + version);
+            return;
+        }
         try (Stream<Path> pathStream = Files.list(dirPath)) {
             pathStream.forEach(this::removeFile);
         }
@@ -64,7 +70,7 @@ public class ArtifactVersionsCleaner {
 
     /* test */
     public static void main(String[] args) throws Exception {
-        Path artifactPath = Paths.get("m:\\test\\.m2\\org\\springframework\\spring-core\\");
+        String artifactKey = "org.springframework.spring-core";
         List<Path> versionPaths = Arrays.asList(
                 Paths.get("m:\\test\\.m2\\org\\springframework\\spring-core\\5.1.3.RELEASE"),
                 Paths.get("m:\\test\\.m2\\org\\springframework\\spring-core\\5.3.10"),
@@ -77,7 +83,7 @@ public class ArtifactVersionsCleaner {
                 Paths.get("m:\\test\\.m2\\org\\springframework\\spring-core\\6.0.6"),
                 Paths.get("m:\\test\\.m2\\org\\springframework\\spring-core\\6.0.8")
         );
-        ArtifactVersionsCleaner obj = new ArtifactVersionsCleaner(artifactPath, versionPaths);
+        ArtifactVersionsCleaner obj = new ArtifactVersionsCleaner(artifactKey, versionPaths);
         obj.go();
     }
 }

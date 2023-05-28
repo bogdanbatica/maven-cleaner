@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
 public class MavenCleaner {
@@ -19,11 +20,12 @@ public class MavenCleaner {
     }
 
     public void go() throws Exception {
-        for (File file : repoRoot.toFile().listFiles()) {
-            if (file.isDirectory()) { // there may also be files in the repo root`
-                trtDir(file.toPath());
-            }
+        TreeSet<Path> entries = new TreeSet<>();
+        try (Stream<Path> pathStream = Files.list(repoRoot)) {
+            pathStream.filter(Files::isDirectory) // there may also be files in the repo root`
+                    .forEach(entries::add);
         }
+        for (Path path : entries) trtDir(path);
     }
 
     /** processing of a directory in the local Maven repository.
@@ -32,7 +34,7 @@ public class MavenCleaner {
      * @param currentPath current directory to process
      */
     public void trtDir(Path currentPath) throws Exception {
-        List<Path> entries = new ArrayList<>();
+        TreeSet<Path> entries = new TreeSet<>();
         List<Path> versionDirs = new ArrayList<>();
         boolean fileFound = false, versionDirFound = false, artifactDirFound = false;
         try (Stream<Path> pathStream = Files.list(currentPath)) {
@@ -68,12 +70,12 @@ public class MavenCleaner {
 
     void cleanVersions(Path artifactPath, List<Path> versionDirs) throws Exception {
         int thisPathNameCount = artifactPath.getNameCount();
-        String mvnPath = artifactPath.subpath(rootPathNameCount, thisPathNameCount)
+        String artifactKey = artifactPath.subpath(rootPathNameCount, thisPathNameCount)
                 .toString().replace(File.separatorChar, '.');
-        if (Config.prefixesToProcess().stream().anyMatch(mvnPath::startsWith)
-                        && Config.prefixesToSkip().stream().noneMatch(mvnPath::startsWith)) {
+        if (Config.prefixesToProcess().stream().anyMatch(artifactKey::startsWith)
+                        && Config.prefixesToSkip().stream().noneMatch(artifactKey::startsWith)) {
             System.out.println("Cleaning " + artifactPath + "...");
-            ArtifactVersionsCleaner cleaner = new ArtifactVersionsCleaner(artifactPath, versionDirs);
+            ArtifactVersionsCleaner cleaner = new ArtifactVersionsCleaner(artifactKey, versionDirs);
             cleaner.go();
         } else {
             System.out.println("Skipping " + artifactPath + "...");
