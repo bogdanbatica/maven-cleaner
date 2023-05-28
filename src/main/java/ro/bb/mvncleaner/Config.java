@@ -55,8 +55,8 @@ public class Config {
     }
 
     /** Gives the files corresponding to the effective-POMs of the projects we want to keep the dependencies for */
-    public static List<String> pomFiles() {
-        String property = ourInstance.properties.getProperty("effectivepom.to.keep");
+    public static List<String> dependencyTreeFiles() {
+        String property = ourInstance.properties.getProperty("dependencies.to.keep");
         if (property == null || property.trim().length() == 0) { // nothing to skip
             return Collections.emptyList(); // nothing to skip
         }

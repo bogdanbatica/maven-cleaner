@@ -44,7 +44,7 @@ public class ArtifactVersionsCleaner {
     void removeVersionDir(ArtifactVersion artifactVersion) throws Exception {
         Path dirPath = artifactVersion.versionPath;
         String version = artifactVersion.comparableVersion.toString();
-        if (PomHolder.artifactVersionToKeep(artifactKey, version)) {
+        if (MavenDependencyTree.artifactVersionToKeep(artifactKey, version)) {
             System.out.println("    Skipping version " + version);
             return;
         }

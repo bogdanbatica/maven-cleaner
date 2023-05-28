@@ -19,7 +19,7 @@ prefix.to.skip=org.springframework.spring-context;org.otherstuff
 
 # put below one or several files containing the effective pom-s of project(s) you want to keep the depenndencies for
 # (use ; as separator between files; inexistent files will be ignored)
-effectivepom.to.keep=/Users/me/project1-effective-pom.xml;/Users/me/project2-effective-pom.xml
+dependencies.to.keep=/Users/me/project1/dep.txt;/Users/me/project2/dep.txt
 
 # If true, only lists the files to be deleted according to the criteria above
 simulation=true
